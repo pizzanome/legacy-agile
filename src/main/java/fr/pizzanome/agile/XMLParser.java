@@ -13,6 +13,12 @@ import java.util.Map;
 
 public class XMLParser {
 
+    /**
+     * Parse le fichier XML et renvoie un objet Plan contenant les informations du plan à charger
+     * @author Kevin Kanaan
+     * @param path Chemin du fichier XML à parser
+     * @return Plan contenant les informations du plan à charger
+     * */
     public Plan parseXML(String path) throws IOException, JDOMException {
         SAXBuilder sxb = new SAXBuilder();
         Document document = sxb.build(path);
