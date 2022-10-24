@@ -5,6 +5,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import javax.xml.soap.SOAPPart;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +15,7 @@ import java.util.Map;
 public class XMLParser {
 
 
-    public void parseXML(String path) throws IOException, JDOMException {
+    public Plan parseXML(String path) throws IOException, JDOMException {
         //On veut parser un fichier XML qui est compose de 2 balises principales : <intersections> et <segments>
         //On va donc creer 2 listes d'objets Intersection et Segment
         //On va ensuite parcourir le fichier XML et remplir la map ntersections avec une clé id et la liste segments
@@ -23,6 +24,7 @@ public class XMLParser {
         SAXBuilder sxb = new SAXBuilder();
             Map<Long,Intersection> intersections= new HashMap<>();
             List<Segment> segments = new ArrayList<>();
+            Intersection warehouse = null;
 
             Document document = sxb.build(path);
             Element racine = document.getRootElement();
@@ -45,13 +47,11 @@ public class XMLParser {
                         intersections.get(Long.parseLong(segment.getAttributeValue("origin"))));
                 segments.add(seg);
             }
-
-            //print segments et intersections
-            for (Map.Entry<Long,Intersection> entry : intersections.entrySet()) {
-                System.out.println(entry.getKey() + " " + entry.getValue().latitude + " " + entry.getValue().longitude);
+            List<Element> uneWarehouse= racine.getChildren("warehouse");
+            for (Element warehouseElement : uneWarehouse) {
+                warehouse = intersections.get(Long.parseLong(warehouseElement.getAttributeValue("address")));
             }
-            for (Segment segment : segments) {
-                System.out.println(segment.name + " " + segment.length + " " + segment.origin.id + " " + segment.destination.id);
-            }
+            Plan plan = new Plan(intersections, segments, warehouse);
+            return plan;
     }
 }
